@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'motion/react';
+import { motion, useMotionValue, useSpring, AnimatePresence, useMotionTemplate } from 'motion/react';
 import { Mail, ArrowRight, Sparkles, ChevronRight, X, User, Instagram } from 'lucide-react';
 
 export default function App() {
@@ -15,6 +15,8 @@ export default function App() {
   // Mouse tracking for gradient effect
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const h1MouseX = useMotionValue(0);
+  const h1MouseY = useMotionValue(0);
 
   const springConfig = { damping: 25, stiffness: 150 };
   const smoothX = useSpring(mouseX, springConfig);
@@ -115,20 +117,45 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-tight mb-6 md:mb-8 px-2"
+            onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              h1MouseX.set(e.clientX - rect.left);
+              h1MouseY.set(e.clientY - rect.top);
+            }}
+            className="relative text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-tight mb-6 md:mb-8 px-2 group cursor-pointer"
           >
-            Turn every event into{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500">a live photo experience</span>
+            {/* Base Text */}
+            <span className="block">Turn every event into{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500">a live photo experience</span>
+            </span>
+
+            {/* Negative Overlay */}
+            <motion.div
+              className="absolute -inset-10 pointer-events-none opacity-0 group-hover:opacity-100 mix-blend-difference"
+              style={{
+                maskImage: useMotionTemplate`radial-gradient(circle 120px at ${h1MouseX}px ${h1MouseY}px, white, transparent)`,
+                backgroundColor: 'white',
+                backdropFilter: 'blur(20px)',
+              }}
+            />
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-lg md:text-xl text-zinc-500 max-w-2xl mb-12 leading-relaxed"
+            className="text-lg md:text-xl text-zinc-500 max-w-2xl leading-relaxed"
           >
             Guests see their photos as the moment unfolds.
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="inline-flex items-center px-5 py-2 rounded-full border border-zinc-200 bg-white text-zinc-900 font-bold text-sm tracking-wide shadow-sm mt-8"
+          >
+            STAY TUNED
+          </motion.div>
 
         {/* CTA Button */}
         {/* Removed CTA button and join text as requested */}
