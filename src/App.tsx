@@ -105,28 +105,35 @@ export default function App() {
 
       {/* Hero Content */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 max-w-5xl mx-auto text-center w-full">
-        <motion.h1
+        <motion.main
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-5xl md:text-8xl font-bold tracking-tight leading-[1.1] mb-8"
+          className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 max-w-5xl mx-auto text-center w-full rounded-3xl"
         >
-          Turn every event into <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 whitespace-nowrap">a live photo experience</span>
-        </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-8xl font-bold tracking-tight leading-[1.1] mb-8"
+          >
+            Turn every event into <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 whitespace-nowrap">a live photo experience</span>
+          </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-zinc-500 max-w-2xl mb-12 leading-relaxed"
-        >
-          Guests see their photos as the moment unfolds.
-        </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg md:text-xl text-zinc-500 max-w-2xl mb-12 leading-relaxed"
+          >
+            Guests see their photos as the moment unfolds.
+          </motion.p>
 
         {/* CTA Button */}
         {/* Removed CTA button and join text as requested */}
 
+        </motion.main>
       </main>
 
       {/* Footer */}
