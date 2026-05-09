@@ -31,11 +31,13 @@ export default function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const sheetUrl = (import.meta.env as any).VITE_GOOGLE_SHEET_WEB_APP_URL;
+
     console.log("Submitting form with data:", formData);
-    console.log("Sheet URL:", import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL);
+    console.log("Sheet URL:", sheetUrl);
     
     if (formData.email) {
-      if (!import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL) {
+      if (!sheetUrl) {
         console.error("VITE_GOOGLE_SHEET_WEB_APP_URL is not set.");
         return;
       }
@@ -45,7 +47,7 @@ export default function App() {
         formDataPayload.append('email', formData.email);
         formDataPayload.append('instagram', formData.instagram);
 
-        const response = await fetch(import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL, {
+        const response = await fetch(sheetUrl, {
           method: 'POST',
           mode: 'no-cors', // Apps Script needs no-cors for this
           body: formDataPayload,
@@ -71,9 +73,9 @@ export default function App() {
       <motion.div
         className="pointer-events-none fixed inset-0 z-0 opacity-60 blur-[120px]"
         style={{
-          background: `radial-gradient(800px circle at ${smoothX}px ${smoothY}px, rgba(147, 51, 234, 0.12), transparent 60%),
-                       radial-gradient(800px circle at ${window.innerWidth - smoothX}px ${window.innerHeight - smoothY}px, rgba(59, 130, 246, 0.1), transparent 60%),
-                       radial-gradient(600px circle at ${smoothX}px ${window.innerHeight - smoothY}px, rgba(251, 146, 60, 0.05), transparent 60%)`,
+          background: `radial-gradient(800px circle at ${smoothX.get()}px ${smoothY.get()}px, rgba(147, 51, 234, 0.12), transparent 60%),
+                       radial-gradient(800px circle at ${window.innerWidth - smoothX.get()}px ${window.innerHeight - smoothY.get()}px, rgba(59, 130, 246, 0.1), transparent 60%),
+                       radial-gradient(600px circle at ${smoothX.get()}px ${window.innerHeight - smoothY.get()}px, rgba(251, 146, 60, 0.05), transparent 60%)`,
         }}
       />
       
@@ -123,30 +125,8 @@ export default function App() {
         </motion.p>
 
         {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col items-center gap-6"
-        >
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="group flex items-center justify-center gap-3 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-medium text-lg hover:bg-zinc-800 transition-all active:scale-95 shadow-2xl shadow-zinc-200"
-          >
-            Try it at your next event
-            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-          </button>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-xs text-zinc-400 flex items-center justify-center gap-1.5 font-medium"
-          >
-            Join 500+ waiting for early entry 
-            <ChevronRight className="w-3 h-3" />
-          </motion.p>
-        </motion.div>
+        {/* Removed CTA button and join text as requested */}
+
       </main>
 
       {/* Footer */}
