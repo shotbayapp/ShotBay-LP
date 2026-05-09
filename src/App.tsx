@@ -29,15 +29,39 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting form with data:", formData);
+    console.log("Sheet URL:", import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL);
+    
     if (formData.email) {
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setIsModalOpen(false);
-        setFormData({ name: '', email: '', instagram: '' });
-      }, 3000);
+      if (!import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL) {
+        console.error("VITE_GOOGLE_SHEET_WEB_APP_URL is not set.");
+        return;
+      }
+      try {
+        const formDataPayload = new FormData();
+        formDataPayload.append('name', formData.name);
+        formDataPayload.append('email', formData.email);
+        formDataPayload.append('instagram', formData.instagram);
+
+        const response = await fetch(import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Apps Script needs no-cors for this
+          body: formDataPayload,
+        });
+        
+        console.log("Fetch executed (no-cors response might not indicate success).");
+        // no-cors means response.ok will not be reliable
+        setIsSubmitted(true);
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setIsModalOpen(false);
+          setFormData({ name: '', email: '', instagram: '' });
+        }, 3000);
+      } catch (error) {
+        console.error("Error submitting form", error);
+      }
     }
   };
 
@@ -45,9 +69,11 @@ export default function App() {
     <div className="h-screen w-full bg-white text-zinc-900 font-sans selection:bg-orange-100 selection:text-orange-900 overflow-hidden relative flex flex-col">
       {/* Interactive Background Gradient */}
       <motion.div
-        className="pointer-events-none fixed inset-0 z-0 opacity-40 blur-[100px]"
+        className="pointer-events-none fixed inset-0 z-0 opacity-60 blur-[120px]"
         style={{
-          background: `radial-gradient(600px circle at ${smoothX}px ${smoothY}px, rgba(251, 146, 60, 0.15), transparent 80%)`,
+          background: `radial-gradient(800px circle at ${smoothX}px ${smoothY}px, rgba(147, 51, 234, 0.12), transparent 60%),
+                       radial-gradient(800px circle at ${window.innerWidth - smoothX}px ${window.innerHeight - smoothY}px, rgba(59, 130, 246, 0.1), transparent 60%),
+                       radial-gradient(600px circle at ${smoothX}px ${window.innerHeight - smoothY}px, rgba(251, 146, 60, 0.05), transparent 60%)`,
         }}
       />
       
@@ -83,8 +109,8 @@ export default function App() {
           transition={{ delay: 0.1 }}
           className="text-5xl md:text-8xl font-bold tracking-tight leading-[1.1] mb-8"
         >
-          Turn every event into a <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 whitespace-nowrap">live photo experience</span>
+          Turn every event into <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 whitespace-nowrap">a live photo experience</span>
         </motion.h1>
 
         <motion.p
@@ -105,7 +131,7 @@ export default function App() {
         >
           <button
             onClick={() => setIsModalOpen(true)}
-            className="group flex items-center justify-center gap-3 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-zinc-800 transition-all active:scale-95 shadow-2xl shadow-zinc-200"
+            className="group flex items-center justify-center gap-3 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-medium text-lg hover:bg-zinc-800 transition-all active:scale-95 shadow-2xl shadow-zinc-200"
           >
             Try it at your next event
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -163,8 +189,11 @@ export default function App() {
 
               {!isSubmitted ? (
                 <div className="space-y-8">
-                  <div className="space-y-3">
-                    <h2 className="text-3xl font-bold tracking-tight leading-tight">Bring ShotBay to your next event</h2>
+                  <div className="space-y-3 text-left">
+                    <h2 className="text-3xl font-bold tracking-tight leading-tight">
+                      Bring ShotBay <br />
+                      to your next event
+                    </h2>
                     <p className="text-zinc-500 text-base leading-relaxed">
                       We’re opening early access for photographers and event teams before launch.
                     </p>
@@ -214,7 +243,7 @@ export default function App() {
 
                     <button
                       type="submit"
-                      className="w-full bg-zinc-900 text-white py-5 rounded-2xl font-bold hover:bg-zinc-800 transition-all active:scale-95 text-base mt-2 shadow-xl shadow-zinc-200"
+                      className="w-full bg-zinc-900 text-white py-5 rounded-2xl font-medium hover:bg-zinc-800 transition-all active:scale-95 text-base mt-2 shadow-xl shadow-zinc-200"
                     >
                       Request Early Access
                     </button>
