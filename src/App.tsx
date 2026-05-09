@@ -31,7 +31,7 @@ export default function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const sheetUrl = (import.meta.env as any).VITE_GOOGLE_SHEET_WEB_APP_URL;
+    const sheetUrl = import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL;
 
     console.log("Submitting form with data:", formData);
     console.log("Sheet URL:", sheetUrl);
@@ -68,7 +68,7 @@ export default function App() {
   };
 
   return (
-    <div className="h-screen w-full bg-white text-zinc-900 font-sans selection:bg-orange-100 selection:text-orange-900 overflow-hidden relative flex flex-col">
+    <div className="min-h-screen w-full bg-white text-zinc-900 font-sans selection:bg-orange-100 selection:text-orange-900 relative flex flex-col">
       {/* Interactive Background Gradient */}
       <motion.div
         className="pointer-events-none fixed inset-0 z-0 opacity-60 blur-[120px]"
@@ -86,7 +86,7 @@ export default function App() {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 flex justify-between items-center px-6 py-10 max-w-7xl mx-auto md:px-12 w-full">
+      <nav className="relative z-10 flex justify-between items-center px-6 py-6 md:py-10 max-w-7xl mx-auto md:px-12 w-full">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -115,10 +115,10 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-8xl font-bold tracking-tight leading-[1.1] mb-8"
+            className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-tight mb-6 md:mb-8 px-2"
           >
-            Turn every event into <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 whitespace-nowrap">a live photo experience</span>
+            Turn every event into{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500">a live photo experience</span>
           </motion.h1>
 
           <motion.p
@@ -140,7 +140,7 @@ export default function App() {
       <footer className="relative z-10 py-12 px-6 w-full">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
           <p className="text-xs text-zinc-400">© 2026 Shotbay. All rights reserved.</p>
-          <div className="flex gap-8">
+          <div className="flex gap-4 sm:gap-8">
             <a href="#" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors uppercase tracking-wider font-bold">Twitter</a>
             <a href="#" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors uppercase tracking-wider font-bold">Instagram</a>
             <a href="#" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors uppercase tracking-wider font-bold">Facebook</a>
@@ -151,7 +151,7 @@ export default function App() {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -164,7 +164,7 @@ export default function App() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-[0_32px_128px_-32px_rgba(0,0,0,0.12)] border border-zinc-100"
+              className="relative w-full max-w-md bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-[0_32px_128px_-32px_rgba(0,0,0,0.12)] border border-zinc-100"
             >
               <button 
                 onClick={() => setIsModalOpen(false)}
@@ -175,13 +175,13 @@ export default function App() {
               </button>
 
               {!isSubmitted ? (
-                <div className="space-y-8">
-                  <div className="space-y-3 text-left">
-                    <h2 className="text-3xl font-bold tracking-tight leading-tight">
+                <div className="space-y-6 md:space-y-8">
+                  <div className="space-y-2 md:space-y-3 text-left">
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight">
                       Bring ShotBay <br />
                       to your next event
                     </h2>
-                    <p className="text-zinc-500 text-base leading-relaxed">
+                    <p className="text-zinc-500 text-sm md:text-base leading-relaxed">
                       We’re opening early access for photographers and event teams before launch.
                     </p>
                   </div>
