@@ -1,8 +1,0 @@
-{
-  "name": "Remix: Remix: ShotBay Landing Page v4",
-  "description": "Share event photos instantly through QR-powered galleries, custom event links, and AI face search.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
