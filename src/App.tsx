@@ -19,7 +19,9 @@ import {
   AlertCircle,
   Menu,
   Mail,
-  Phone
+  Phone,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 interface Toast {
@@ -97,6 +99,7 @@ export default function App() {
 
   // Early Access Lead Collection System States
   const [earlyAccessModalOpen, setEarlyAccessModalOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [earlyAccessForm, setEarlyAccessForm] = useState({
     fullName: '',
     email: '',
@@ -710,6 +713,83 @@ export default function App() {
               </button>
             </article>
 
+          </div>
+        </section>
+
+        {/* FAQ SECTION */}
+        <section className="faq shell py-24 border-t border-gray-100" id="faq">
+          <div className="max-w-[800px] mx-auto">
+            <div className="text-center mb-16">
+              <span className="eyebrow inline-block bg-[#f1f1ff] text-[#6b75ff] px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase mb-3">FAQ</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-[#111] tracking-tight">Frequently Asked Questions</h2>
+              <p className="text-gray-500 mt-2 text-sm sm:text-base">Everything you need to know about the ShotBay offline and online experience.</p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                {
+                  id: 0,
+                  question: "Do guests need to download an app?",
+                  answer: "No, guests can access galleries directly through QR codes or custom event URLs on any web browser. There is no app install required, ensuring friction-free photo delivery."
+                },
+                {
+                  id: 1,
+                  question: "How does AI Face Search work?",
+                  answer: "Guests can find their photos instantly by scanning a QR code and uploading a fast selfie. Our secure AI face matching engine index-scans face templates and filters immediately only the photos they are in."
+                },
+                {
+                  id: 2,
+                  question: "Can guests download photos?",
+                  answer: "Yes, guests can download photos in high resolution straight to their phones. You can control downloads and watermark rules in your photographer dashboard."
+                },
+                {
+                  id: 3,
+                  question: "Can I connect my Google Drive?",
+                  answer: "Yes, ShotBay features 1-click Google Drive sync. Every image you deliver streams straight into your configured storage folder as a secure backup."
+                },
+                {
+                  id: 4,
+                  question: "Can I create multiple event galleries?",
+                  answer: "Absolutely! Depending on your chosen plan, you can host multiple independent events and customize each with dynamic URLs, branding, and access permissions."
+                }
+              ].map((faq) => {
+                const isOpen = faqOpen === faq.id;
+                return (
+                  <div 
+                    key={faq.id} 
+                    className="border border-[#e5e7eb] rounded-2xl bg-white overflow-hidden transition-all duration-200"
+                  >
+                    <button
+                      onClick={() => setFaqOpen(isOpen ? null : faq.id)}
+                      className="w-full flex justify-between items-center p-6 text-left cursor-pointer focus:outline-none"
+                    >
+                      <span className="font-semibold text-[#111] text-[15px] sm:text-[16px]">
+                        {faq.question}
+                      </span>
+                      {isOpen ? (
+                        <ChevronUp className="w-5 h-5 text-[#6b75ff] shrink-0 ml-4 transition-transform duration-200" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-[#6b75ff] shrink-0 ml-4 transition-transform duration-200" />
+                      )}
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                        >
+                          <div className="px-6 pb-6 pt-0 text-gray-500 text-sm sm:text-[15px] leading-relaxed border-t border-gray-50">
+                            {faq.answer}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
