@@ -16,7 +16,8 @@ import {
   Image as ImageIcon, 
   ExternalLink,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Menu
 } from 'lucide-react';
 
 interface Toast {
@@ -44,6 +45,7 @@ export default function App() {
   const [checkoutModalOpen, setCheckoutModalOpen] = useState<{ open: boolean; plan: string; price: string } | null>(null);
   const [driveConfigOpen, setDriveConfigOpen] = useState(false);
   const [demoGalleryOpen, setDemoGalleryOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Custom Dynamic State
   const [events, setEvents] = useState<EventItem[]>([
@@ -182,8 +184,8 @@ export default function App() {
       </div>
 
       {/* HEADER SECTION */}
-      <header className="nav">
-        <div className="shell nav-inner">
+      <header className="nav relative">
+        <div className="shell nav-inner flex items-center justify-between">
           <a className="brand flex items-center" href="#">
             <img 
               src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/logo.svg" 
@@ -192,16 +194,82 @@ export default function App() {
               referrerPolicy="no-referrer"
             />
           </a>
-          <nav className="nav-links">
-            <a href="#product">Product</a>
-            <a href="#how">How It Works</a>
-            <a href="#pricing">Pricing</a>
+          <nav className="nav-links hidden md:flex items-center gap-11">
+            <a href="#product" className="hover:text-[#6b75ff] transition">Product</a>
+            <a href="#how" className="hover:text-[#6b75ff] transition">How It Works</a>
+            <a href="#pricing" className="hover:text-[#6b75ff] transition">Pricing</a>
           </nav>
-          <div className="nav-actions">
-            <button onClick={() => triggerToast('Login is pre-configured in demo mode!', 'info')} className="hover:text-[#6b75ff] cursor-pointer transition">Login</button>
-            <a className="btn primary" onClick={() => setCheckoutModalOpen({ open: true, plan: 'Free Trial', price: '₹0' })} href="#pricing">Try For Free</a>
+          <div className="nav-actions flex items-center gap-6">
+            <button onClick={() => triggerToast('Login is pre-configured in demo mode!', 'info')} className="hover:text-[#6b75ff] cursor-pointer transition hidden md:block">Login</button>
+            <a className="btn primary hidden md:inline-flex" onClick={() => setCheckoutModalOpen({ open: true, plan: 'Free Trial', price: '₹0' })} href="#pricing">Try For Free</a>
+            
+            {/* Hamburger button for mobile/tablet toggle */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className="md:hidden p-2 text-gray-700 hover:text-black focus:outline-none bg-transparent border-0 cursor-pointer"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
+            </button>
           </div>
         </div>
+
+        {/* Responsive Mobile Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="absolute top-[64px] left-0 right-0 bg-white border-b border-gray-200 shadow-xl z-40 overflow-hidden md:hidden"
+            >
+              <div className="p-5 flex flex-col gap-3 font-normal">
+                <a 
+                  href="#product" 
+                  onClick={() => setMobileMenuOpen(false)} 
+                  className="py-2 px-1 text-sm font-medium border-b border-gray-100 flex items-center justify-between hover:text-[#6b75ff] transition text-gray-800"
+                >
+                  Product <ArrowRight className="w-4 h-4 text-gray-400" />
+                </a>
+                <a 
+                  href="#how" 
+                  onClick={() => setMobileMenuOpen(false)} 
+                  className="py-2 px-1 text-sm font-medium border-b border-gray-100 flex items-center justify-between hover:text-[#6b75ff] transition text-gray-800"
+                >
+                  How It Works <ArrowRight className="w-4 h-4 text-gray-400" />
+                </a>
+                <a 
+                  href="#pricing" 
+                  onClick={() => setMobileMenuOpen(false)} 
+                  className="py-2 px-1 text-sm font-medium border-b border-gray-100 flex items-center justify-between hover:text-[#6b75ff] transition text-gray-800"
+                >
+                  Pricing <ArrowRight className="w-4 h-4 text-gray-400" />
+                </a>
+                <div className="flex flex-col gap-2 pt-2">
+                  <button 
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      triggerToast('Login is pre-configured in demo mode!', 'info');
+                    }
+                    } 
+                    className="w-full h-11 border border-gray-200 text-sm font-medium hover:bg-gray-50 text-gray-800 transition bg-transparent cursor-pointer"
+                  >
+                    Login
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setCheckoutModalOpen({ open: true, plan: 'Free Trial', price: '₹0' });
+                    }}
+                    className="w-full h-11 bg-[#6b75ff] hover:bg-[#505cff] text-white text-sm font-medium shadow-lg shadow-indigo-100 transition cursor-pointer"
+                  >
+                    Try For Free
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main>
@@ -218,13 +286,13 @@ export default function App() {
         </section>
 
         {/* WORKSPACE / SHOWCASE CONTAINER */}
-        <section className="showcase shell" id="product">
-          <div className="showcase-wrap">
+        <section className="showcase shell !p-0 overflow-hidden" id="product">
+          <div className="showcase-wrap !w-full !max-w-full !p-0 h-[300px] sm:h-[450px] md:h-[559px]">
             <img 
               src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/product.png" 
               alt="ShotBay Product Interface" 
               referrerPolicy="no-referrer"
-              className="w-full h-auto object-contain rounded-xl border-2 border-[#b8b8c0] shadow-2xl bg-white block z-10"
+              className="w-full h-full object-cover block"
             />
           </div>
         </section>
@@ -239,7 +307,7 @@ export default function App() {
         <section className="feature-grid shell">
           
           {/* Cell 1: Copy */}
-          <div className="feature-cell feature-copy">
+          <div className="feature-cell feature-copy order-cell-1">
             <h3>Find photos in seconds.</h3>
             <p>Guests can instantly discover their photos using AI face search instead of scrolling through hundreds of images.</p>
             <ul className="checks">
@@ -250,27 +318,27 @@ export default function App() {
           </div>
           
           {/* Cell 2: Visual */}
-          <div className="feature-cell visual flex items-center justify-center p-6 bg-[#f5f3ff] rounded-xl border border-[#e2e2e2]">
+          <div className="feature-cell visual !p-0 overflow-hidden order-cell-2">
             <img 
-              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/product.svg" 
+              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/2.png" 
               alt="Find photos in seconds" 
               referrerPolicy="no-referrer"
-              className="max-h-[320px] w-auto object-contain rounded-lg border border-[#e2e2e2] shadow bg-white"
+              className="w-full h-full object-cover block"
             />
           </div>
 
           {/* Cell 3: Visual */}
-          <div className="feature-cell visual flex items-center justify-center p-6 bg-[#f5f3ff] rounded-xl border border-[#e2e2e2]">
+          <div className="feature-cell visual !p-0 overflow-hidden order-cell-3">
             <img 
-              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/product.svg" 
+              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/3.png" 
               alt="Dedicated event gallery" 
               referrerPolicy="no-referrer"
-              className="max-h-[320px] w-auto object-contain rounded-lg border border-[#e2e2e2] shadow bg-white"
+              className="w-full h-full object-cover block"
             />
           </div>
 
           {/* Cell 4: Copy */}
-          <div className="feature-cell feature-copy">
+          <div className="feature-cell feature-copy order-cell-4">
             <h3>A dedicated gallery for every event.</h3>
             <p>Create beautiful event pages with custom URLs and QR codes for instant guest access.</p>
             <ul className="checks">
@@ -281,7 +349,7 @@ export default function App() {
           </div>
 
           {/* Cell 5: Copy */}
-          <div className="feature-cell feature-copy">
+          <div className="feature-cell feature-copy order-cell-5">
             <h3>Every photo can be shared instantly.</h3>
             <p>Generate unique QR codes for individual photos and make downloads effortless.</p>
             <ul className="checks">
@@ -292,27 +360,27 @@ export default function App() {
           </div>
 
           {/* Cell 6: Visual */}
-          <div className="feature-cell visual flex items-center justify-center p-6 bg-[#f5f3ff] rounded-xl border border-[#e2e2e2]">
+          <div className="feature-cell visual !p-0 overflow-hidden order-cell-6">
             <img 
-              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/product.svg" 
+              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/4.png" 
               alt="Instant photo sharing" 
               referrerPolicy="no-referrer"
-              className="max-h-[320px] w-auto object-contain rounded-lg border border-[#e2e2e2] shadow bg-white"
+              className="w-full h-full object-cover block"
             />
           </div>
 
           {/* Cell 7: Visual */}
-          <div className="feature-cell visual flex items-center justify-center p-6 bg-[#f5f3ff] rounded-xl border border-[#e2e2e2]">
+          <div className="feature-cell visual !p-0 overflow-hidden order-cell-7">
             <img 
-              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/product.svg" 
+              src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/5.png" 
               alt="Google Drive sync storage" 
               referrerPolicy="no-referrer"
-              className="max-h-[320px] w-auto object-contain rounded-lg border border-[#e2e2e2] shadow bg-white"
+              className="w-full h-full object-cover block"
             />
           </div>
 
           {/* Cell 8: Copy */}
-          <div className="feature-cell feature-copy">
+          <div className="feature-cell feature-copy order-cell-8">
             <h3>Your storage.<br />Your control.</h3>
             <p>Connect Google Drive and keep all event photos in your own storage without paying additional storage fees.</p>
             <ul className="checks">
@@ -435,7 +503,7 @@ export default function App() {
       </main>
 
       {/* COMPACT BRAND FOOTER */}
-      <footer className="bg-[#fafafa] border-t border-gray-200 mt-24 py-16">
+      <footer className="bg-[#fafafa] border-t border-gray-200 mt-24 pt-16 pb-0">
         <div className="shell grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="md:col-span-1 space-y-4">
             <a className="brand flex items-center gap-2 mb-3" href="#">
@@ -488,11 +556,8 @@ export default function App() {
             </ul>
           </div>
         </div>
-        <div className="shell border-t border-gray-100 mt-12 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-450">
+        <div className="shell border-t border-gray-100 mt-12 pt-6 pb-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-450">
           <p>© {new Date().getFullYear()} ShotBay Inc. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-            Made with <Sparkles className="w-3.5 h-3.5 text-amber-500" /> for elite memories.
-          </p>
         </div>
       </footer>
 
