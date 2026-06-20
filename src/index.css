@@ -1183,3 +1183,12 @@ button {
     font-size: 20px;
   }
 }
+
+/* Premium SaaS Overrides to bypass the universal border-radius reset */
+.early-access-modal {
+  border-radius: 12px !important;
+}
+.early-access-input {
+  border-radius: 12px !important;
+}
+

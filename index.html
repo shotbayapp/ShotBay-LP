@@ -3,11 +3,140 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    
+    <!-- Primary SEO Metadata -->
+    <title>ShotBay – Instant Event Photo Sharing for Photographers</title>
+    <meta name="description" content="Share event photos instantly with QR-powered galleries, AI Face Search, custom event links, and Google Drive integration. Built for photographers, weddings, corporate events, and celebrations." />
+    <meta name="keywords" content="event photo sharing, photo sharing platform, wedding photo sharing, photographer gallery software, event gallery software, AI face search photos, photo QR code, live photo gallery, photo delivery software, wedding gallery platform, photography client gallery, event photography software, photo sharing app for photographers, real time photo sharing, event gallery, wedding photo delivery, event photo gallery, gallery sharing software, photo QR sharing, instant photo sharing" />
+    <meta name="author" content="ShotBay Inc." />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" id="canonical-url" href="https://shotbay.in/" />
+
+    <!-- OpenGraph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shotbay.in/" />
+    <meta property="og:title" content="ShotBay – Instant Event Photo Sharing" />
+    <meta property="og:description" content="Create live event galleries, share photos using QR codes, enable AI Face Search, and deliver photos instantly." />
+    <meta property="og:image" content="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/product.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://shotbay.in" />
+    <meta name="twitter:title" content="ShotBay – Instant Event Photo Sharing" />
+    <meta name="twitter:description" content="Live galleries, QR sharing, AI Face Search and Google Drive integration for photographers." />
+    <meta name="twitter:image" content="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/product.png" />
+
+    <!-- Favicon & PWA App Manifest Icons -->
+    <link rel="icon" type="image/svg+xml" href="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/logo.svg" />
+    <link rel="apple-touch-icon" href="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/logo.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#6b75ff" />
+
+    <!-- Structured Data: Organization, SoftwareApplication, FAQPage & Breadcrumb schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://shotbay.in/#organization",
+            "name": "ShotBay",
+            "url": "https://shotbay.in",
+            "logo": "https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/logo.svg"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://shotbay.in/#software",
+            "name": "ShotBay",
+            "applicationCategory": "PhotographyApplication",
+            "operatingSystem": "Web",
+            "url": "https://shotbay.in",
+            "description": "Event photo sharing platform with QR galleries, AI Face Search, custom event URLs and Google Drive integration."
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://shotbay.in/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Do guests need an app?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No, guests can access galleries directly through QR codes or custom event URLs."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does AI Face Search work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Guests can find their photos instantly using AI-powered facial matching."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can guests download photos?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, photos can be downloaded directly from the gallery."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I connect my Google Drive?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, photographers can use their own Google Drive as storage."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I create multiple event galleries?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, depending on your selected plan."
+                }
+              }
+            ]
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://shotbay.in/#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://shotbay.in/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Features",
+                "item": "https://shotbay.in/#product"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "How It Works",
+                "item": "https://shotbay.in/#how"
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Pricing",
+                "item": "https://shotbay.in/#pricing"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

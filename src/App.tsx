@@ -17,7 +17,9 @@ import {
   ExternalLink,
   CheckCircle,
   AlertCircle,
-  Menu
+  Menu,
+  Mail,
+  Phone
 } from 'lucide-react';
 
 interface Toast {
@@ -37,6 +39,52 @@ interface EventItem {
   type: 'first' | 'second' | 'third' | 'custom';
 }
 
+const COUNTRIES = [
+  { code: '+91', country: 'India (IN)' },
+  { code: '+1', country: 'United States / Canada (US/CA)' },
+  { code: '+44', country: 'United Kingdom (UK)' },
+  { code: '+61', country: 'Australia (AU)' },
+  { code: '+971', country: 'United Arab Emirates (AE)' },
+  { code: '+65', country: 'Singapore (SG)' },
+  { code: '+49', country: 'Germany (DE)' },
+  { code: '+33', country: 'France (FR)' },
+  { code: '+39', country: 'Italy (IT)' },
+  { code: '+81', country: 'Japan (JP)' },
+  { code: '+82', country: 'South Korea (KR)' },
+  { code: '+86', country: 'China (CN)' },
+  { code: '+55', country: 'Brazil (BR)' },
+  { code: '+27', country: 'South Africa (ZA)' },
+  { code: '+34', country: 'Spain (ES)' },
+  { code: '+7', country: 'Russia (RU)' },
+  { code: '+52', country: 'Mexico (MX)' },
+  { code: '+62', country: 'Indonesia (ID)' },
+  { code: '+60', country: 'Malaysia (MY)' },
+  { code: '+63', country: 'Philippines (PH)' },
+  { code: '+64', country: 'New Zealand (NZ)' },
+  { code: '+31', country: 'Netherlands (NL)' },
+  { code: '+41', country: 'Switzerland (CH)' },
+  { code: '+46', country: 'Sweden (SE)' },
+  { code: '+47', country: 'Norway (NO)' },
+  { code: '+45', country: 'Denmark (DK)' },
+  { code: '+351', country: 'Portugal (PT)' },
+  { code: '+353', country: 'Ireland (IE)' },
+  { code: '+92', country: 'Pakistan (PK)' },
+  { code: '+880', country: 'Bangladesh (BD)' },
+  { code: '+94', country: 'Sri Lanka (LK)' },
+  { code: '+977', country: 'Nepal (NP)' },
+  { code: '+66', country: 'Thailand (TH)' },
+  { code: '+84', country: 'Vietnam (VN)' },
+  { code: '+966', country: 'Saudi Arabia (SA)' },
+  { code: '+90', country: 'Turkey (TR)' },
+  { code: '+20', country: 'Egypt (EG)' },
+  { code: '+234', country: 'Nigeria (NG)' },
+  { code: '+254', country: 'Kenya (KE)' },
+  { code: '+54', country: 'Argentina (AR)' },
+  { code: '+56', country: 'Chile (CL)' },
+  { code: '+57', country: 'Colombia (CO)' },
+  { code: '+51', country: 'Peru (PE)' }
+];
+
 export default function App() {
   // Application State
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Events' | 'Photos'>('Dashboard');
@@ -46,6 +94,188 @@ export default function App() {
   const [driveConfigOpen, setDriveConfigOpen] = useState(false);
   const [demoGalleryOpen, setDemoGalleryOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Early Access Lead Collection System States
+  const [earlyAccessModalOpen, setEarlyAccessModalOpen] = useState(false);
+  const [earlyAccessForm, setEarlyAccessForm] = useState({
+    fullName: '',
+    email: '',
+    countryCode: '+91',
+    mobileNumber: ''
+  });
+  const [earlyAccessErrors, setEarlyAccessErrors] = useState<Record<string, string>>({});
+  const [earlyAccessLoading, setEarlyAccessLoading] = useState(false);
+  const [earlyAccessSuccess, setEarlyAccessSuccess] = useState(false);
+
+  // Validate Early Access Lead Inputs
+  const validateEarlyAccessForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (!earlyAccessForm.fullName.trim()) {
+      errors.fullName = "Full Name is required";
+    }
+
+    if (!earlyAccessForm.email.trim()) {
+      errors.email = "Email Address is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(earlyAccessForm.email)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    if (!earlyAccessForm.countryCode) {
+      errors.countryCode = "Country Code is required";
+    }
+
+    if (!earlyAccessForm.mobileNumber.trim()) {
+      errors.mobileNumber = "Mobile Number is required";
+    } else if (!/^\+?[0-9\s\-()]{7,15}$/.test(earlyAccessForm.mobileNumber)) {
+      errors.mobileNumber = "Please enter a valid mobile number (7-15 digits)";
+    }
+
+    setEarlyAccessErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Google Sheets integration connector and lead submit handler
+  const handleEarlyAccessSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!validateEarlyAccessForm()) {
+      return;
+    }
+
+    setEarlyAccessLoading(true);
+
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbyJ1X9hAu7kJOwwl3pdki18BHKsJQC6SRVllIeb58q1Q-KY-QoVkYaBgtbXgLYI7YG0/exec", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify({
+          fullName: earlyAccessForm.fullName,
+          email: earlyAccessForm.email,
+          countryCode: earlyAccessForm.countryCode,
+          mobile: earlyAccessForm.mobileNumber
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+
+      if (data && data.result === "success") {
+        triggerToast("Thanks! You're on the list — we'll be in touch soon.", "success");
+        setEarlyAccessForm({
+          fullName: '',
+          email: '',
+          countryCode: '+91',
+          mobileNumber: ''
+        });
+        setEarlyAccessSuccess(false);
+        setEarlyAccessModalOpen(false);
+      } else {
+        throw new Error("Google Sheets Apps Script response failed");
+      }
+    } catch (error) {
+      console.error("Sheets sync issue:", error);
+      triggerToast("Something went wrong. Please try again.", "error");
+    } finally {
+      setEarlyAccessLoading(false);
+    }
+  };
+
+  // Dynamic SEO Metadata and Route Handler
+  useEffect(() => {
+    const handleMetadataAndRoute = () => {
+      const hash = window.location.hash;
+      let title = "ShotBay – Instant Event Photo Sharing for Photographers";
+      let description = "Share event photos instantly with QR-powered galleries, AI Face Search, custom event links, and Google Drive integration. Built for photographers, weddings, corporate events, and celebrations.";
+      let canonicalSuffix = "";
+
+      if (hash === '#product') {
+        title = "ShotBay Features – AI Face Search, QR Galleries & More";
+        description = "Explore AI Face Search, QR-powered galleries, custom event URLs and Google Drive integration.";
+        canonicalSuffix = "#product";
+      } else if (hash === '#how') {
+        title = "How ShotBay Works";
+        description = "Create events, upload photos, generate QR codes and let guests access memories instantly.";
+        canonicalSuffix = "#how";
+      } else if (hash === '#pricing') {
+        title = "ShotBay Pricing – Plans for Photographers";
+        description = "Simple pricing built for photographers. Start free and scale as your events grow.";
+        canonicalSuffix = "#pricing";
+      }
+
+      // Update HTML Title page metadata
+      document.title = title;
+
+      // Update HTML Description tag
+      const descMeta = document.querySelector('meta[name="description"]');
+      if (descMeta) {
+        descMeta.setAttribute('content', description);
+      }
+
+      // Update OpenGraph Title
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) {
+        ogTitle.setAttribute('content', title);
+      }
+
+      // Update OpenGraph Description
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) {
+        ogDesc.setAttribute('content', description);
+      }
+
+      // Update Twitter Title
+      const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+      if (twitterTitle) {
+        twitterTitle.setAttribute('content', title);
+      }
+
+      // Update Twitter Description
+      const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+      if (twitterDesc) {
+        twitterDesc.setAttribute('content', description);
+      }
+
+      // Update Canonical Link Reference
+      const canonicalLink = document.getElementById('canonical-url');
+      if (canonicalLink) {
+        canonicalLink.setAttribute('href', `https://shotbay.in/${canonicalSuffix}`);
+      }
+    };
+
+    // Initialize metadata updates on page mount
+    handleMetadataAndRoute();
+
+    // Attach active listener to state and routing hash interactions
+    window.addEventListener('hashchange', handleMetadataAndRoute);
+    return () => {
+      window.removeEventListener('hashchange', handleMetadataAndRoute);
+    };
+  }, []);
+
+  // Escape key handler for closing the Early Access Modal gracefully
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && earlyAccessModalOpen) {
+        setEarlyAccessModalOpen(false);
+        setEarlyAccessSuccess(false);
+        setEarlyAccessForm({
+          fullName: '',
+          email: '',
+          countryCode: '+91',
+          mobileNumber: ''
+        });
+        setEarlyAccessErrors({});
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [earlyAccessModalOpen]);
   
   // Custom Dynamic State
   const [events, setEvents] = useState<EventItem[]>([
@@ -200,8 +430,8 @@ export default function App() {
             <a href="#pricing" className="hover:text-[#6b75ff] transition">Pricing</a>
           </nav>
           <div className="nav-actions flex items-center gap-6">
-            <button onClick={() => triggerToast('Login is pre-configured in demo mode!', 'info')} className="hover:text-[#6b75ff] cursor-pointer transition hidden md:block">Login</button>
-            <a className="btn primary hidden md:inline-flex" onClick={() => setCheckoutModalOpen({ open: true, plan: 'Free Trial', price: '₹0' })} href="#pricing">Try For Free</a>
+            <button onClick={() => setEarlyAccessModalOpen(true)} className="hover:text-[#6b75ff] cursor-pointer transition hidden md:block">Login</button>
+            <button className="btn primary hidden md:inline-flex cursor-pointer" onClick={() => setEarlyAccessModalOpen(true)}>Try For Free</button>
             
             {/* Hamburger button for mobile/tablet toggle */}
             <button 
@@ -249,9 +479,8 @@ export default function App() {
                   <button 
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      triggerToast('Login is pre-configured in demo mode!', 'info');
-                    }
-                    } 
+                      setEarlyAccessModalOpen(true);
+                    }} 
                     className="w-full h-11 border border-gray-200 text-sm font-medium hover:bg-gray-50 text-gray-800 transition bg-transparent cursor-pointer"
                   >
                     Login
@@ -259,7 +488,7 @@ export default function App() {
                   <button 
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      setCheckoutModalOpen({ open: true, plan: 'Free Trial', price: '₹0' });
+                      setEarlyAccessModalOpen(true);
                     }}
                     className="w-full h-11 bg-[#6b75ff] hover:bg-[#505cff] text-white text-sm font-medium shadow-lg shadow-indigo-100 transition cursor-pointer"
                   >
@@ -278,8 +507,8 @@ export default function App() {
           <h1>Your guests shouldn't wait days for their photos.</h1>
           <p>Share event photos instantly through QR-powered galleries, custom event links, and AI face search.</p>
           <div className="hero-actions">
-            <a className="btn primary" onClick={() => triggerToast('Selected Start Free Trial!', 'success')} href="#pricing">Start Free Trial</a>
-            <button className="btn cursor-pointer" onClick={() => setDemoGalleryOpen(true)}>
+            <button className="btn primary cursor-pointer" onClick={() => setEarlyAccessModalOpen(true)}>Start Free Trial</button>
+            <button className="btn cursor-pointer" onClick={() => setEarlyAccessModalOpen(true)}>
               View Demo
             </button>
           </div>
@@ -323,6 +552,7 @@ export default function App() {
               src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/2.png" 
               alt="Find photos in seconds" 
               referrerPolicy="no-referrer"
+              loading="lazy"
               className="w-full h-full object-cover block"
             />
           </div>
@@ -333,6 +563,7 @@ export default function App() {
               src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/3.png" 
               alt="Dedicated event gallery" 
               referrerPolicy="no-referrer"
+              loading="lazy"
               className="w-full h-full object-cover block"
             />
           </div>
@@ -345,6 +576,7 @@ export default function App() {
               <li>Custom event URLs</li>
               <li>Guest-friendly access</li>
               <li>Mobile optimized</li>
+              <li>Indexed & scan ready</li>
             </ul>
           </div>
 
@@ -356,6 +588,7 @@ export default function App() {
               <li>Direct downloads</li>
               <li>Simple sharing</li>
               <li>One scan access</li>
+              <li>Optimized sharing payload</li>
             </ul>
           </div>
 
@@ -365,6 +598,7 @@ export default function App() {
               src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/4.png" 
               alt="Instant photo sharing" 
               referrerPolicy="no-referrer"
+              loading="lazy"
               className="w-full h-full object-cover block"
             />
           </div>
@@ -375,6 +609,7 @@ export default function App() {
               src="https://ksixmbebdydvlmebjxie.supabase.co/storage/v1/object/public/Web%20Assets/Web%20Assets/5.png" 
               alt="Google Drive sync storage" 
               referrerPolicy="no-referrer"
+              loading="lazy"
               className="w-full h-full object-cover block"
             />
           </div>
@@ -415,7 +650,7 @@ export default function App() {
                 <li>Google Drive Integration</li>
               </ul>
               <button 
-                onClick={() => setCheckoutModalOpen({ open: true, plan: 'Free Trial', price: '₹0' })} 
+                onClick={() => setEarlyAccessModalOpen(true)} 
                 className="btn cursor-pointer w-full mt-auto block text-center font-bold"
               >
                 Select Plan
@@ -439,7 +674,7 @@ export default function App() {
                 <li>Priority Support</li>
               </ul>
               <button 
-                onClick={() => setCheckoutModalOpen({ open: true, plan: 'Pro', price: '₹699/month' })} 
+                onClick={() => setEarlyAccessModalOpen(true)} 
                 className="btn primary cursor-pointer w-full mt-auto"
               >
                 Select Plan
@@ -468,7 +703,7 @@ export default function App() {
                 <li>Early Access Features</li>
               </ul>
               <button 
-                onClick={() => setCheckoutModalOpen({ open: true, plan: 'Studio Recommended', price: '₹1,499/month' })}
+                onClick={() => setEarlyAccessModalOpen(true)}
                 className="btn primary cursor-pointer w-full mt-auto"
               >
                 Select Plan
@@ -494,7 +729,7 @@ export default function App() {
             <div className="logo-cell supabase">supabase</div>
           </div>
           <button 
-            onClick={() => triggerToast('You are experiencing the official modern ShotBay live landing page sandbox!', 'info')} 
+            onClick={() => setEarlyAccessModalOpen(true)} 
             className="footer-link bg-transparent border-none"
           >
             Know more
@@ -523,7 +758,7 @@ export default function App() {
             <ul className="space-y-2.5 text-xs text-gray-500">
               <li><a href="#product" className="hover:text-[#6b75ff] transition">Features</a></li>
               <li><a href="#pricing" className="hover:text-[#6b75ff] transition">Pricing &amp; Tiers</a></li>
-              <li><button onClick={() => setDemoGalleryOpen(true)} className="hover:text-[#6b75ff] transition cursor-pointer text-left bg-transparent border-0 p-0 text-gray-500 font-normal">Interactive Demo</button></li>
+              <li><button onClick={() => setEarlyAccessModalOpen(true)} className="hover:text-[#6b75ff] transition cursor-pointer text-left bg-transparent border-0 p-0 text-gray-500 font-normal">Interactive Demo</button></li>
               <li><a href="#how" className="hover:text-[#6b75ff] transition">How It Works</a></li>
             </ul>
           </div>
@@ -560,6 +795,233 @@ export default function App() {
           <p>© {new Date().getFullYear()} ShotBay Inc. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* EARLY ACCESS LEAD COLLECTION MODAL */}
+      <AnimatePresence>
+        {earlyAccessModalOpen && (
+          <div 
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setEarlyAccessModalOpen(false);
+                setEarlyAccessSuccess(false);
+                setEarlyAccessForm({
+                  fullName: '',
+                  email: '',
+                  countryCode: '+91',
+                  mobileNumber: ''
+                });
+                setEarlyAccessErrors({});
+              }
+            }}
+            className="fixed inset-0 bg-[#0c0c0e]/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 cursor-pointer"
+          >
+            <motion.div 
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.96, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.96, opacity: 0, y: 8 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-white rounded-[12px] early-access-modal border border-[#EAEAEA] max-w-[400px] w-full shadow-[0_12px_40px_rgba(0,0,0,0.04)] overflow-hidden text-[#111] font-sans relative cursor-default p-6 md:p-8"
+            >
+              {/* Minimal Subtle Close button */}
+              <button 
+                onClick={() => {
+                  setEarlyAccessModalOpen(false);
+                  setEarlyAccessSuccess(false);
+                  setEarlyAccessForm({
+                    fullName: '',
+                    email: '',
+                    countryCode: '+91',
+                    mobileNumber: ''
+                  });
+                  setEarlyAccessErrors({});
+                }} 
+                className="absolute top-4 right-4 text-[#8a8885] hover:text-black transition p-1.5 rounded-[12px] early-access-input cursor-pointer"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {earlyAccessSuccess ? (
+                /* REDESIGNED SUCCESS MODAL VIEW (Premium & Minimal, 12px corners) */
+                <div className="text-center py-4 space-y-6">
+                  <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full mx-auto flex items-center justify-center border border-emerald-100/60 shadow-inner">
+                    <CheckCircle className="w-6 h-6" strokeWidth={2.5} />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold tracking-tight text-[#111]">
+                      You're on the list 🎉
+                    </h3>
+                    <p className="text-[13px] text-[#61605c] leading-relaxed max-w-[280px] mx-auto font-normal">
+                      Thanks for joining the ShotBay Early Access program.
+                    </p>
+                    <p className="text-xs text-[#8a8885] max-w-[280px] mx-auto font-light">
+                      We'll contact you soon with access details.
+                    </p>
+                  </div>
+
+                  <div className="pt-2">
+                    <button 
+                      onClick={() => {
+                        setEarlyAccessModalOpen(false);
+                        setEarlyAccessSuccess(false);
+                        setEarlyAccessForm({
+                          fullName: '',
+                          email: '',
+                          countryCode: '+91',
+                          mobileNumber: ''
+                        });
+                        setEarlyAccessErrors({});
+                      }}
+                      className="w-full h-10 bg-[#6b75ff] hover:bg-[#505cff] text-white font-medium text-sm rounded-[12px] early-access-input transition-transform active:scale-[0.99] cursor-pointer shadow-md shadow-indigo-100/50"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* REDESIGNED FORM VIEW (Compact, Minimal SaaS Style, 12px corners, pure white) */
+                <form onSubmit={handleEarlyAccessSubmit} className="space-y-5">
+                  {/* Typography Header - removed early access tag badge */}
+                  <div className="text-center space-y-1.5 mb-2">
+                    <h3 className="text-xl font-bold text-[#111] tracking-tight">
+                      Get Early Access
+                    </h3>
+                    <p className="text-[13px] text-[#61605c] font-normal leading-normal max-w-[280px] mx-auto">
+                      Be among the first photographers to experience ShotBay.
+                    </p>
+                  </div>
+
+                  {/* Form fields with corner radius */}
+                  <div className="space-y-3.5">
+                    {/* Full Name input */}
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7a7875] mb-1">
+                        Full Name
+                      </label>
+                      <input 
+                        type="text" 
+                        placeholder="John Doe"
+                        value={earlyAccessForm.fullName}
+                        onChange={(e) => setEarlyAccessForm(prev => ({ ...prev, fullName: e.target.value }))}
+                        className={`w-full h-9.5 px-3 rounded-[12px] early-access-input border bg-white text-sm outline-none transition-all ${earlyAccessErrors.fullName ? 'border-rose-400 focus:ring-1 focus:ring-rose-400/20 bg-rose-50/10' : 'border-[#e0dfdb] hover:border-[#cbc9c4] focus:border-[#6b75ff]'}`}
+                        disabled={earlyAccessLoading}
+                        autoFocus
+                      />
+                      {earlyAccessErrors.fullName && (
+                        <p className="text-[11px] text-rose-500 font-medium mt-1">{earlyAccessErrors.fullName}</p>
+                      )}
+                    </div>
+
+                    {/* Email Address input */}
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7a7875] mb-1">
+                        Email Address
+                      </label>
+                      <input 
+                        type="email" 
+                        placeholder="name@example.com"
+                        value={earlyAccessForm.email}
+                        onChange={(e) => setEarlyAccessForm(prev => ({ ...prev, email: e.target.value }))}
+                        className={`w-full h-9.5 px-3 rounded-[12px] early-access-input border bg-white text-sm outline-none transition-all ${earlyAccessErrors.email ? 'border-rose-400 focus:ring-1 focus:ring-rose-400/20 bg-rose-50/10' : 'border-[#e0dfdb] hover:border-[#cbc9c4] focus:border-[#6b75ff]'}`}
+                        disabled={earlyAccessLoading}
+                      />
+                      {earlyAccessErrors.email && (
+                        <p className="text-[11px] text-rose-500 font-medium mt-1">{earlyAccessErrors.email}</p>
+                      )}
+                    </div>
+
+                    {/* Mobile Number with reduced Country Selector width */}
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7a7875] mb-1">
+                        Mobile Number
+                      </label>
+                      <div className="grid grid-cols-12 gap-2">
+                        {/* Compact Country Dropdown - reduced to col-span-3 */}
+                        <div className="col-span-3">
+                          <select
+                            value={earlyAccessForm.countryCode}
+                            onChange={(e) => setEarlyAccessForm(prev => ({ ...prev, countryCode: e.target.value }))}
+                            className="w-full h-9.5 px-1.5 rounded-[12px] early-access-input border border-[#e0dfdb] hover:border-[#cbc9c4] bg-white text-xs outline-none focus:border-[#6b75ff] transition-all cursor-pointer text-center"
+                            disabled={earlyAccessLoading}
+                          >
+                            {COUNTRIES.map((c) => (
+                              <option key={c.code + c.country} value={c.code}>
+                                {c.code}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        {/* Mobile input - expanded to col-span-9 */}
+                        <div className="col-span-9">
+                          <input 
+                            type="tel" 
+                            placeholder="98765 43210"
+                            value={earlyAccessForm.mobileNumber}
+                            onChange={(e) => setEarlyAccessForm(prev => ({ ...prev, mobileNumber: e.target.value }))}
+                            className={`w-full h-9.5 px-3 rounded-[12px] early-access-input border bg-white text-sm outline-none transition-all ${earlyAccessErrors.mobileNumber ? 'border-rose-400 focus:ring-1 focus:ring-rose-400/20 bg-rose-50/10' : 'border-[#e0dfdb] hover:border-[#cbc9c4] focus:border-[#6b75ff]'}`}
+                            disabled={earlyAccessLoading}
+                          />
+                        </div>
+                      </div>
+                      {earlyAccessErrors.mobileNumber && (
+                        <p className="text-[11px] text-rose-500 font-medium mt-1">{earlyAccessErrors.mobileNumber}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions & Button Placement */}
+                  <div className="space-y-2.5 pt-2">
+                    <button 
+                      type="submit" 
+                      className="w-full h-10 bg-[#6b75ff] hover:bg-[#505cff] text-white font-medium text-sm rounded-[12px] early-access-input flex items-center justify-center gap-2 shadow-sm transition hover:scale-[1.002] active:scale-[0.998] cursor-pointer disabled:opacity-80 disabled:pointer-events-none"
+                      disabled={earlyAccessLoading}
+                    >
+                      {earlyAccessLoading ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Requesting...
+                        </>
+                      ) : (
+                        "Request Access"
+                      )}
+                    </button>
+
+                    <div className="text-center text-xs">
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setEarlyAccessModalOpen(false);
+                          setEarlyAccessErrors({});
+                          setEarlyAccessForm({
+                            fullName: '',
+                            email: '',
+                            countryCode: '+91',
+                            mobileNumber: ''
+                          });
+                        }}
+                        className="text-[13px] font-medium text-[#7a7875] hover:text-black transition cursor-pointer bg-transparent border-0 p-1"
+                        disabled={earlyAccessLoading}
+                      >
+                        Maybe Later
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tiny subtle footer note */}
+                  <div className="text-[11px] text-[#8a8885] text-center leading-normal pt-1.5 border-t border-[#eaeae4]">
+                    We’ll only use your details to contact you about ShotBay.
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* CREATE EVENT MODAL */}
       {createModalOpen && (
